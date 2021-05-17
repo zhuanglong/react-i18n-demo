@@ -3,7 +3,7 @@ import {
   HashRouter as Router, Switch, Route, Link
 } from 'react-router-dom';
 
-import { IntlPro, ChooseLanguageButton } from '@/i18n';
+import { IntlPro, ChooseLanguageButton } from '@/i18n/index.lazy';
 
 import Home from '@/pages/Home';
 import About from '@/pages/About';
