@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true, // 使用元数据特性
+    "experimentalDecorators": true, // 支持 ES7 的装饰器特性
+    "allowSyntheticDefaultImports": true, // 允许从没有默认导出的模块中默认导入(也就是不做检查)
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}

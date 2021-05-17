@@ -1,0 +1,42 @@
+@font-face {
+  font-family: 'Ranchers-Regular';
+  src: url('@/assets/fonts/Ranchers-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'algers';
+  src: url('@/assets/fonts/alger.ttf') format('truetype');
+}
+
+.function {
+  .blue-font() {
+    return: blue;
+  }
+}
+
+.avatar {
+  width: 100px;
+}
+
+.logo {
+  width: 150px;
+}
+
+.bgImage {
+  display: block;
+  width: 100px;
+  height: 100px;
+  background-image: url('@/assets/20210407170253.jpg');
+  background-size: cover;
+}
+
+.title {
+  display: flex;
+  font-size: 18px;
+  font-family: 'Ranchers-Regular', sans-serif;
+
+  .subTitle {
+    color: blue-font();
+    font-family: 'algers', sans-serif;
+  }
+}
