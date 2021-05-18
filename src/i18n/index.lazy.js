@@ -3,6 +3,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { IntlProvider, useIntl } from 'react-intl';
 
+import history from '@/router/history';
+
 // 语言标签映射
 const languageMap = {
   'en-us': () => import(/* webpackChunkName: "locale.en-us" */'./locales/en-us'),
@@ -15,7 +17,7 @@ const languageMap = {
 const defaultLanguage = 'en-us';
 
 // 支持使用的语言
-const supportLanguages = [
+export const supportLanguages = [
   { title: 'en-US', tag: 'en-us' },
   { title: '中文简体', tag: 'zh-cn' },
   { title: '中文繁体', tag: 'zh-tw' },
@@ -39,8 +41,12 @@ const getPrevLanguage = () => {
     browserLanguage = prefixLanguage[blArr[0]];
   }
 
-  // 缓存的 || 浏览器设置的语言 || 默认语言
-  const language = matched(localStorage.getItem('language'))
+  // URL 中的语言标签
+  const languageTagOfURL = window.location.hash.split('/')[1];
+
+  // URL 中的语言标签 || 缓存的 || 浏览器设置的语言 || 默认语言
+  const language = matched(languageTagOfURL)
+    || matched(localStorage.getItem('language'))
     || matched(browserLanguage)
     || defaultLanguage;
   localStorage.setItem('language', language);
@@ -83,6 +89,13 @@ export function IntlPro({ children }) {
       // eslint-disable-next-line no-alert
       alert('语言包加载失败');
     });
+
+    // 更改 URL 中的语言标签
+    // 如 http://localhost:8080/#/en-us => http://localhost:8080/#/zh-cn
+    const hashArray = window.location.hash.split('/');
+    hashArray.shift();
+    hashArray[0] = tag;
+    history.replace(`/${hashArray.join('/')}`);
   };
 
   useEffect(() => {
