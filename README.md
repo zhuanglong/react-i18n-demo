@@ -40,6 +40,9 @@ const supportLanguages = [
 
 // 获取上一次使用的语言
 const getPrevLanguage = () => {
+  // 匹配出语言标签
+  const matched = (tag) => (languageMap[tag] ? tag : '');
+
   // 浏览器设置的语言，需要兼容 "en", "en-US", "fr", "fr-FR", "en-us", "fr-fr" 等等
   // https://developer.mozilla.org/en-US/docs/Web/API/NavigatorLanguage/language
   const prefixLanguage = {
@@ -48,15 +51,16 @@ const getPrevLanguage = () => {
   };
   let browserLanguage = navigator.language.toLowerCase();
   const blArr = browserLanguage.split('-');
-  if (blArr.length === 1) {
+  if (blArr.length === 1 && prefixLanguage[blArr[0]]) {
     browserLanguage = prefixLanguage[blArr[0]];
   }
 
-  // 匹配出语言标签
-  const matched = (tag) => (languageMap[tag] ? tag : '');
-
-  // 取缓存的 || 浏览器设置的语言 || 默认语言
-  return matched(localStorage.getItem('language')) || matched(browserLanguage) || defaultLanguage;
+  // 缓存的 || 浏览器设置的语言 || 默认语言
+  const language = matched(localStorage.getItem('language'))
+    || matched(browserLanguage)
+    || defaultLanguage;
+  localStorage.setItem('language', language);
+  return language;
 };
 
 // 状态共享
@@ -82,6 +86,7 @@ export const ChooseLanguageButton = () => {
 
 export function IntlPro({ children }) {
   const [language, setLanguage] = useState(getPrevLanguage());
+
   const chooseLanguage = (tag) => {
     setLanguage(tag);
     localStorage.setItem('language', tag);
@@ -97,7 +102,7 @@ export function IntlPro({ children }) {
             formats={languageMap[props.language].formats}
             messages={languageMap[props.language].messages}
           >
-            {children}
+            {children(props)}
           </IntlProvider>
         )}
       </IntlProContext.Consumer>
@@ -117,10 +122,11 @@ export function IntlPro({ children }) {
 ```js
 import React from 'react';
 import {
-  HashRouter as Router, Switch, Route, Link
+  Router, Switch, Route, Link, Redirect
 } from 'react-router-dom';
 
-import { IntlPro, ChooseLanguageButton } from '@/i18n';
+import history from '@/router/history';
+import { IntlPro, ChooseLanguageButton } from '@/i18n/index.lazy';
 
 import Home from '@/pages/Home';
 import About from '@/pages/About';
@@ -132,24 +138,27 @@ const CounterHook = asyncComponent(() => import(/* webpackChunkName: "CounterHoo
 function getRouter() {
   return (
     <IntlPro>
-      <Router>
-        <div>
-          <ChooseLanguageButton />
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/about">About</Link></li>
-            <li><Link to="/counterState">CounterState</Link></li>
-            <li><Link to="/counterHook">CounterHook</Link></li>
-          </ul>
-          <hr />
-          <Switch>
-            <Route path="/" exact component={Home} />
-            <Route path="/about" component={About} />
-            <Route path="/counterState" component={CounterState} />
-            <Route path="/counterHook" component={CounterHook} />
-          </Switch>
-        </div>
-      </Router>
+      {() => (
+        <Router history={history}>
+          <div>
+            <ChooseLanguageButton />
+            <ul>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/about">About</Link></li>
+              <li><Link to="/counterState">CounterState</Link></li>
+              <li><Link to="/counterHook">CounterHook</Link></li>
+            </ul>
+            <hr />
+            <Switch>
+              <Route path="/" exact component={Home} />
+              <Route path="/about" component={About} />
+              <Route path="/counterState" component={CounterState} />
+              <Route path="/counterHook" component={CounterHook} />
+              <Redirect to="/" />
+            </Switch>
+          </div>
+        </Router>
+      )}
     </IntlPro>
   );
 }

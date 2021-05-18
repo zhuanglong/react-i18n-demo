@@ -24,6 +24,9 @@ const supportLanguages = [
 
 // 获取上一次使用的语言
 const getPrevLanguage = () => {
+  // 匹配出语言标签
+  const matched = (tag) => (languageMap[tag] ? tag : '');
+
   // 浏览器设置的语言，需要兼容 "en", "en-US", "fr", "fr-FR", "en-us", "fr-fr" 等等
   // https://developer.mozilla.org/en-US/docs/Web/API/NavigatorLanguage/language
   const prefixLanguage = {
@@ -32,15 +35,16 @@ const getPrevLanguage = () => {
   };
   let browserLanguage = navigator.language.toLowerCase();
   const blArr = browserLanguage.split('-');
-  if (blArr.length === 1) {
+  if (blArr.length === 1 && prefixLanguage[blArr[0]]) {
     browserLanguage = prefixLanguage[blArr[0]];
   }
 
-  // 匹配出语言标签
-  const matched = (tag) => (languageMap[tag] ? tag : '');
-
-  // 取缓存的 || 浏览器设置的语言 || 默认语言
-  return matched(localStorage.getItem('language')) || matched(browserLanguage) || defaultLanguage;
+  // 缓存的 || 浏览器设置的语言 || 默认语言
+  const language = matched(localStorage.getItem('language'))
+    || matched(browserLanguage)
+    || defaultLanguage;
+  localStorage.setItem('language', language);
+  return language;
 };
 
 // 状态共享
@@ -70,10 +74,15 @@ export function IntlPro({ children }) {
 
   const chooseLanguage = (tag) => {
     setLanguage(tag);
+    localStorage.setItem('language', tag);
+
+    // 下载语言包
     languageMap[tag]().then((file) => {
       setLanguageFile(file.default);
+    }).catch(() => {
+      // eslint-disable-next-line no-alert
+      alert('语言包加载失败');
     });
-    localStorage.setItem('language', tag);
   };
 
   useEffect(() => {
@@ -91,7 +100,7 @@ export function IntlPro({ children }) {
             formats={languageFile.formats}
             messages={languageFile.messages}
           >
-            {children}
+            {children(props)}
           </IntlProvider>
         )}
       </IntlProContext.Consumer>

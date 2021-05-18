@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-  HashRouter as Router, Switch, Route, Link
+  Router, Switch, Route, Link, Redirect
 } from 'react-router-dom';
 
+import history from '@/router/history';
 import { IntlPro, ChooseLanguageButton } from '@/i18n/index.lazy';
 
 import Home from '@/pages/Home';
@@ -15,24 +16,27 @@ const CounterHook = asyncComponent(() => import(/* webpackChunkName: "CounterHoo
 function getRouter() {
   return (
     <IntlPro>
-      <Router>
-        <div>
-          <ChooseLanguageButton />
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/about">About</Link></li>
-            <li><Link to="/counterState">CounterState</Link></li>
-            <li><Link to="/counterHook">CounterHook</Link></li>
-          </ul>
-          <hr />
-          <Switch>
-            <Route path="/" exact component={Home} />
-            <Route path="/about" component={About} />
-            <Route path="/counterState" component={CounterState} />
-            <Route path="/counterHook" component={CounterHook} />
-          </Switch>
-        </div>
-      </Router>
+      {() => (
+        <Router history={history}>
+          <div>
+            <ChooseLanguageButton />
+            <ul>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/about">About</Link></li>
+              <li><Link to="/counterState">CounterState</Link></li>
+              <li><Link to="/counterHook">CounterHook</Link></li>
+            </ul>
+            <hr />
+            <Switch>
+              <Route path="/" exact component={Home} />
+              <Route path="/about" component={About} />
+              <Route path="/counterState" component={CounterState} />
+              <Route path="/counterHook" component={CounterHook} />
+              <Redirect to="/" />
+            </Switch>
+          </div>
+        </Router>
+      )}
     </IntlPro>
   );
 }
