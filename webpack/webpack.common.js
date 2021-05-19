@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const LessPluginFunctions = require('less-plugin-functions');
+// const { getThemeVariables } = require('antd/dist/theme');
 
 const { SRC_PATH, DIST_PATH, PUBLIC_PATH } = require('./paths');
 
@@ -87,6 +88,12 @@ const commonConfig = {
         from: path.join(PUBLIC_PATH, 'favicon.ico'),
         to: path.join(DIST_PATH, 'favicon.ico')
       }]
+    }),
+    // 忽略没有用到的 moment.js 的本地化内容
+    // https://webpack.docschina.org/plugins/ignore-plugin/#example-of-ignoring-moment-locales
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/
     })
   ],
 
@@ -145,6 +152,7 @@ const commonConfig = {
       {
         // https://webpack.docschina.org/loaders/css-loader/#pure-css-css-modules-and-postcss
         test: /\.less$/i,
+        exclude: [/antd/],
         use: [
           styleLoaders.styleLoader,
           styleLoaders.cssLoader,
@@ -159,6 +167,42 @@ const commonConfig = {
           styleLoaders.cssLoader,
           styleLoaders.postcssLoader,
           styleLoaders.sassLoader
+        ]
+      },
+      {
+        // 处理 antd 的样式
+        test: /\.less$/i,
+        include: [/antd/],
+        use: [
+          styleLoaders.styleLoader,
+          mergeWithCustomize({
+            customizeObject: customizeObject({
+              options: 'replace'
+            })
+          })(
+            styleLoaders.cssLoader, { options: {} }
+          ),
+          mergeWithCustomize({
+            customizeObject: customizeObject({
+              options: 'replace'
+            })
+          })(
+            styleLoaders.lessLoader, {
+              options: {
+                lessOptions: {
+                  modifyVars: {
+                    // https://ant.design/docs/react/customize-theme-cn
+                    // ...getThemeVariables({
+                    //   dark: true, // 开启暗黑模式
+                    //   compact: true // 开启紧凑模式
+                    // }),
+                    'primary-color': '#1DA57A'
+                  },
+                  javascriptEnabled: true // 在 less 中使用 JavaScript 表达式
+                }
+              }
+            }
+          )
         ]
       }
     ]

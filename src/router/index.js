@@ -4,7 +4,7 @@ import {
 } from 'react-router-dom';
 
 import history from '@/router/history';
-import { IntlPro, ChooseLanguageButton } from '@/i18n/index.lazy';
+import { IntlPro, ChooseLanguageButton } from '@/i18n/index';
 
 import Home from '@/pages/Home';
 import About from '@/pages/About';

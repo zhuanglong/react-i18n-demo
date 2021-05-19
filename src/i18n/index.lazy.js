@@ -2,13 +2,30 @@
 /* eslint-disable quote-props */
 import React, { useContext, useState, useEffect } from 'react';
 import { IntlProvider, useIntl } from 'react-intl';
+import { ConfigProvider } from 'antd';
+import moment from 'moment';
 
 // 语言标签映射
 const languageMap = {
-  'en-us': () => import(/* webpackChunkName: "locale.en-us" */'./locales/en-us'),
-  'zh-cn': () => import(/* webpackChunkName: "locale.zh-cn" */'./locales/zh-cn'),
-  'zh-tw': () => import(/* webpackChunkName: "locale.zh-tw" */'./locales/zh-tw'),
-  'ja': () => import(/* webpackChunkName: "locale.ja" */'./locales/ja')
+  'en-us': {
+    'app': () => import(/* webpackChunkName: "locale.en-us" */'./locales/en-us'),
+    'antd': require('antd/lib/locale/en_US').default
+  },
+  'zh-cn': {
+    'app': () => import(/* webpackChunkName: "locale.zh-cn" */'./locales/zh-cn'),
+    'antd': require('antd/lib/locale/zh_CN').default,
+    'moment': require('moment/locale/zh-cn').default
+  },
+  'zh-tw': {
+    'app': () => import(/* webpackChunkName: "locale.zh-tw" */'./locales/zh-tw'),
+    'antd': require('antd/lib/locale/zh_TW').default,
+    'moment': require('moment/locale/zh-tw').default
+  },
+  'ja': {
+    'app': () => import(/* webpackChunkName: "locale.ja" */'./locales/ja'),
+    'antd': require('antd/lib/locale/ja_JP').default,
+    'moment': require('moment/locale/ja').default
+  }
 };
 
 // 默认语言
@@ -43,7 +60,11 @@ const getPrevLanguage = () => {
   const language = matched(localStorage.getItem('language'))
     || matched(browserLanguage)
     || defaultLanguage;
+
+  moment.locale(language);
   localStorage.setItem('language', language);
+  console.log(123);
+
   return language;
 };
 
@@ -68,8 +89,9 @@ export const ChooseLanguageButton = () => {
   );
 };
 
+const prevLanguage = getPrevLanguage();
 export function IntlPro({ children }) {
-  const [language, setLanguage] = useState(getPrevLanguage());
+  const [language, setLanguage] = useState(prevLanguage);
   const [languageFile, setLanguageFile] = useState();
 
   const chooseLanguage = (tag) => {
@@ -77,7 +99,8 @@ export function IntlPro({ children }) {
     localStorage.setItem('language', tag);
 
     // 下载语言包
-    languageMap[tag]().then((file) => {
+    languageMap[tag]['app']().then((file) => {
+      moment.locale(tag);
       setLanguageFile(file.default);
     }).catch(() => {
       // eslint-disable-next-line no-alert
@@ -100,7 +123,9 @@ export function IntlPro({ children }) {
             formats={languageFile.formats}
             messages={languageFile.messages}
           >
-            {children(props)}
+            <ConfigProvider locale={languageMap[props.language]['antd']}>
+              {children(props)}
+            </ConfigProvider>
           </IntlProvider>
         )}
       </IntlProContext.Consumer>

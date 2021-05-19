@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
+import 'antd/lib/style/index.less';
 
 import getRouter from '@/router';
 

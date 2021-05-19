@@ -1,13 +1,30 @@
 /* eslint-disable quote-props */
 import React, { useContext, useState } from 'react';
 import { IntlProvider, useIntl } from 'react-intl';
+import { ConfigProvider } from 'antd';
+import moment from 'moment';
 
 // 语言标签映射
 const languageMap = {
-  'en-us': require('./locales/en-us').default,
-  'zh-cn': require('./locales/zh-cn').default,
-  'zh-tw': require('./locales/zh-tw').default,
-  'ja': require('./locales/ja').default
+  'en-us': {
+    'app': require('./locales/en-us').default,
+    'antd': require('antd/lib/locale/en_US').default
+  },
+  'zh-cn': {
+    'app': require('./locales/zh-cn').default,
+    'antd': require('antd/lib/locale/zh_CN').default,
+    'moment': require('moment/locale/zh-cn').default
+  },
+  'zh-tw': {
+    'app': require('./locales/zh-tw').default,
+    'antd': require('antd/lib/locale/zh_TW').default,
+    'moment': require('moment/locale/zh-tw').default
+  },
+  'ja': {
+    'app': require('./locales/ja').default,
+    'antd': require('antd/lib/locale/ja_JP').default,
+    'moment': require('moment/locale/ja').default
+  }
 };
 
 // 默认语言
@@ -42,7 +59,10 @@ const getPrevLanguage = () => {
   const language = matched(localStorage.getItem('language'))
     || matched(browserLanguage)
     || defaultLanguage;
+
+  moment.locale(language);
   localStorage.setItem('language', language);
+
   return language;
 };
 
@@ -71,6 +91,7 @@ export function IntlPro({ children }) {
   const [language, setLanguage] = useState(getPrevLanguage());
 
   const chooseLanguage = (tag) => {
+    moment.locale(tag);
     setLanguage(tag);
     localStorage.setItem('language', tag);
   };
@@ -82,10 +103,12 @@ export function IntlPro({ children }) {
           <IntlProvider
             locale={props.language}
             defaultLocale={defaultLanguage}
-            formats={languageMap[props.language].formats}
-            messages={languageMap[props.language].messages}
+            formats={languageMap[props.language]['app'].formats}
+            messages={languageMap[props.language]['app'].messages}
           >
-            {children(props)}
+            <ConfigProvider locale={languageMap[props.language]['antd']}>
+              {children(props)}
+            </ConfigProvider>
           </IntlProvider>
         )}
       </IntlProContext.Consumer>

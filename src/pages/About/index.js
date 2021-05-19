@@ -9,6 +9,8 @@ import {
   FormattedNumber,
   FormattedPlural
 } from 'react-intl';
+import { DatePicker } from 'antd';
+import moment from 'moment';
 
 import styles from './styles.scss';
 
@@ -55,6 +57,13 @@ class About extends React.Component {
     // );
     return (
       <div className={styles.bgColor}>
+        <Row title="antd 组件">
+          <DatePicker />
+        </Row>
+        <Row title="Moment.js">
+          <div>{moment().format('MMM ddd dddd')}</div>
+          <div>{moment().fromNow()}</div>
+        </Row>
         <Row title="字符串">
           <FormattedMessage
             tagName="p"

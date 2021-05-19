@@ -5,7 +5,14 @@
   ],
   "plugins": [
     ["@babel/plugin-proposal-decorators", { "legacy": true }],
-    "@babel/plugin-proposal-class-properties"
+    "@babel/plugin-proposal-class-properties",
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "style": true // true 为项目编译阶段，可以对引入的 antd 样式文件进行编译
+      }
+    ]
   ],
   "env": {
     "development": {
