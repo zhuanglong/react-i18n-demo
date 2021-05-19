@@ -12,8 +12,8 @@ const languageMap = {
   },
   'zh-cn': {
     'app': require('./locales/zh-cn').default,
-    'antd': require('antd/lib/locale/zh_CN').default,
-    'moment': require('moment/locale/zh-cn').default
+    'antd': require('./antdLocales/zh_CN').default, // 用自定义的
+    'moment': require('./momentLocales/zh-cn').default // 用自定义的
   },
   'zh-tw': {
     'app': require('./locales/zh-tw').default,
@@ -88,7 +88,7 @@ export const ChooseLanguageButton = () => {
 };
 
 export function IntlPro({ children }) {
-  const [language, setLanguage] = useState(getPrevLanguage());
+  const [language, setLanguage] = useState(() => getPrevLanguage());
 
   const chooseLanguage = (tag) => {
     moment.locale(tag);

@@ -9,22 +9,24 @@ import moment from 'moment';
 const languageMap = {
   'en-us': {
     'app': () => import(/* webpackChunkName: "locale.en-us" */'./locales/en-us'),
-    'antd': require('antd/lib/locale/en_US').default
+    'antd': () => import(/* webpackChunkName: "antd.locale.en-us" */'antd/lib/locale/en_US'),
+    'moment': () => null
   },
   'zh-cn': {
+    // 对于第三方库，用 import() 并不能编译为懒加载，只有本项目的文件才可以，所以只能拷贝库的国际化文件过来修改
     'app': () => import(/* webpackChunkName: "locale.zh-cn" */'./locales/zh-cn'),
-    'antd': require('antd/lib/locale/zh_CN').default,
-    'moment': require('moment/locale/zh-cn').default
+    'antd': () => import(/* webpackChunkName: "antd.locale.zh-cn" */'./antdLocales/zh_CN'), // 用自定义的
+    'moment': () => import(/* webpackChunkName: "moment.locale.zh-cn" */'./momentLocales/zh-cn') // 用自定义的
   },
   'zh-tw': {
     'app': () => import(/* webpackChunkName: "locale.zh-tw" */'./locales/zh-tw'),
-    'antd': require('antd/lib/locale/zh_TW').default,
-    'moment': require('moment/locale/zh-tw').default
+    'antd': () => import(/* webpackChunkName: "antd.locale.zh-tw" */'antd/lib/locale/zh_TW'),
+    'moment': () => import(/* webpackChunkName: "moment.locale.zh-tw" */'moment/locale/zh-tw')
   },
   'ja': {
     'app': () => import(/* webpackChunkName: "locale.ja" */'./locales/ja'),
-    'antd': require('antd/lib/locale/ja_JP').default,
-    'moment': require('moment/locale/ja').default
+    'antd': () => import(/* webpackChunkName: "antd.locale.ja" */'antd/lib/locale/ja_JP'),
+    'moment': () => import(/* webpackChunkName: "moment.locale.ja" */'moment/locale/ja')
   }
 };
 
@@ -63,7 +65,6 @@ const getPrevLanguage = () => {
 
   moment.locale(language);
   localStorage.setItem('language', language);
-  console.log(123);
 
   return language;
 };
@@ -89,23 +90,28 @@ export const ChooseLanguageButton = () => {
   );
 };
 
-const prevLanguage = getPrevLanguage();
 export function IntlPro({ children }) {
-  const [language, setLanguage] = useState(prevLanguage);
+  const [language, setLanguage] = useState(() => getPrevLanguage());
   const [languageFile, setLanguageFile] = useState();
 
-  const chooseLanguage = (tag) => {
+  const chooseLanguage = async (tag) => {
     setLanguage(tag);
     localStorage.setItem('language', tag);
 
     // 下载语言包
-    languageMap[tag]['app']().then((file) => {
+    try {
+      const file1 = await languageMap[tag]['app']();
+      const file2 = await languageMap[tag]['antd']();
+      await languageMap[tag]['moment']();
       moment.locale(tag);
-      setLanguageFile(file.default);
-    }).catch(() => {
+      setLanguageFile({
+        'app': file1.default,
+        'antd': file2.default
+      });
+    } catch (error) {
       // eslint-disable-next-line no-alert
       alert('语言包加载失败');
-    });
+    }
   };
 
   useEffect(() => {
@@ -120,10 +126,10 @@ export function IntlPro({ children }) {
           <IntlProvider
             locale={props.language}
             defaultLocale={defaultLanguage}
-            formats={languageFile.formats}
-            messages={languageFile.messages}
+            formats={languageFile['app'].formats}
+            messages={languageFile['app'].messages}
           >
-            <ConfigProvider locale={languageMap[props.language]['antd']}>
+            <ConfigProvider locale={languageFile['antd']}>
               {children(props)}
             </ConfigProvider>
           </IntlProvider>
