@@ -74,7 +74,7 @@ export const ChooseLanguageButton = () => {
 };
 
 export function IntlPro({ children }) {
-  const [language, setLanguage] = useState(getPrevLanguage());
+  const [language, setLanguage] = useState(() => getPrevLanguage());
 
   const chooseLanguage = (tag) => {
     setLanguage(tag);
