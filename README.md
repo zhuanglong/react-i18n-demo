@@ -1,6 +1,6 @@
-> 本教程基于 [react-intl 多语言切换](https://github.com/zhuanglong/react-i18n-demo/tree/react-intl-demo) 项目，修改为可映射语言标签到地址栏。
+> 基于项目 [react-intl 多语言切换](https://github.com/zhuanglong/react-i18n-demo/tree/react-intl-demo)，修改为可映射语言标签到地址栏。
 
-[项目源码](https://github.com/zhuanglong/react-i18n-demo/tree/react-intl-demo2)
+[项目地址](https://github.com/zhuanglong/react-i18n-demo/tree/react-intl-demo2)
 
 ## 实现原理
 
