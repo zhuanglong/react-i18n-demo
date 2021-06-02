@@ -1,6 +1,6 @@
-> 本教程基于 [react-intl 多语言切换](https://github.com/zhuanglong/react-i18n-demo/tree/react-intl-demo) 项目，添加 antd、moment.js 国际化。
+> 基于项目 [react-intl 多语言切换](https://github.com/zhuanglong/react-i18n-demo/tree/react-intl-demo)，添加 antd、moment.js 国际化。
 
-[项目源码](https://github.com/zhuanglong/react-i18n-demo/tree/react-intl-antd-demo)
+[项目地址](https://github.com/zhuanglong/react-i18n-demo/tree/react-intl-antd-demo)
 
 ## 效果演示
 
