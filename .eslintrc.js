@@ -58,6 +58,6 @@ module.exports = {
 
     'import/prefer-default-export': 0, // 如果模块中只有一个导出，则最好使用默认导出而不是命名导出
     'import/no-extraneous-dependencies': [2, { optionalDependencies: true }], // 检查项目 import 的依赖是否符合 devDependencies 或 dependencies
-    'import/no-unresolved': [2, { ignore: ['^@/'] }] // 路径别名
+    'import/no-unresolved': [1, { ignore: ['^@/'] }] // 路径别名
   }
 };

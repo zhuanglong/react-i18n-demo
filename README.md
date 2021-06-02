@@ -1,6 +1,6 @@
-> 本教程基于 [从零搭建 React 项目开发环境](https://github.com/zhuanglong/react-template)。
+> 基于个人搭建的脚手架 [react-template](https://github.com/zhuanglong/react-template) 开发。
 
-[项目源码](https://github.com/zhuanglong/react-i18n-demo/tree/react-intl-demo)
+[项目地址](https://github.com/zhuanglong/react-i18n-demo/tree/react-intl-demo)
 
 [react-intl](https://github.com/formatjs/formatjs) 是雅虎的语言国际化开源项目 FormatJS 的一部分，通过其提供的组件和 API 可以与 ReactJS 绑定。
 
